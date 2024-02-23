@@ -20,7 +20,7 @@ export class Lobby {
                 this.id+=1
                 socket.emit('loginStatus', {success: true} as LoginStatus )
                 // also emit the lobby model to everyone, so that they can update 
-                // and know that this person has joined
+                // and know that this
             })
             socket.on('signup', () => {
                 //
