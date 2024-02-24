@@ -1,4 +1,4 @@
-import { CreateRoomRequest, LobbyModel, LoginRequest, LoginStatus, Player, Room as RoomModel } from '../../shared/types'
+import { CreateRoomRequest, LobbyModel, LoginRequest, LoginStatus, Player, RoomModel, tryRoomJoin } from '../../shared/types'
 import { Server } from 'socket.io'
 import { Room } from './room'
 
@@ -24,14 +24,32 @@ export class Lobby {
                 //
             })
             socket.on('getLobbyModel', () => {
-                socket.emit('lobbyModel', {players: this.players, rooms: this.rooms} as LobbyModel)
+                socket.emit('lobbyModel', {players: this.players, rooms: this.rooms.map(r => r.toModel())} as LobbyModel)
             })
             socket.on('createRoom', (cr: CreateRoomRequest) => {
+                console.log("creating room with request")
+                console.log(cr)
                 let roomOwner = this.players.find((p: Player) => p.username === cr.owner)
                 if (roomOwner) {
-                    this.rooms.push(new Room(this.id, roomOwner))
+                    let room = new Room(this.id, roomOwner)
+                    if (cr.password) {
+                        room.pass = cr.password
+                    }
+                    this.rooms.push(room)
                     this.id+=1
-                    socket.emit('lobbyChanged', {players: this.players, rooms: this.rooms} as LobbyModel)
+                    socket.emit('lobbyChanged', {players: this.players, rooms: this.rooms.map(r => r.toModel())} as LobbyModel)
+                }
+            })
+            socket.on('tryRoomJoin', (trj: tryRoomJoin) => {
+                console.log("here1")
+                let room = this.rooms.find((r) => r.id === trj.id)
+                if (room) {
+                    if (!room.pass || room.pass && trj.pass === room.pass) {
+                        console.log('here')
+                        socket.emit("tryRoomJoinResponse", {success: true, id: room.id})
+                    } else {
+                        socket.emit('tryRoomJoinResponse', {success: false, id: room.id})
+                    }
                 }
             })
         })

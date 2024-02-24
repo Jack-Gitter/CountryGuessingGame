@@ -13,18 +13,31 @@ export type LoginRequest = {
 
 export type CreateRoomRequest = {
    owner: string
+   password?: string
 }
 
 export type LoginStatus = {
    success: boolean
 }
 
-export type Room = {
+export type RoomModel = {
    id: number,
    players: Player[]
+   password?: boolean
 }
 
 export type LobbyModel = {
    players: Player[]
-   rooms: Room[]
+   rooms: RoomModel[]
+}
+
+
+export type tryRoomJoin = {
+   id: number
+   pass?: string
+}
+
+export type tryRoomJoinResponse = {
+   success: boolean, 
+   id:number
 }
