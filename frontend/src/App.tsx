@@ -6,6 +6,7 @@ import { Route, Routes } from 'react-router-dom'
 import Lobby from './Lobby'
 import { socket } from './socket';
 import { Player } from './player';
+import Room from './Room';
 
 
 export const socketContext = React.createContext(socket)
@@ -21,6 +22,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Login/>}/>
         <Route path="/lobby" element={<Lobby/>}/>
+        <Route path="/room/:id" element={<Room/>}></Route>
       </Routes>
     </socketContext.Provider>
     </ourPlayerContext.Provider>
