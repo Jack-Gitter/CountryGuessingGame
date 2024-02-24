@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react"
 import { socketContext } from "./App"
 import { LobbyModel, Player as PlayerModel, Room } from "../../shared/types"
 import { CreateRoomRequest } from "../../shared/types"
-import { ourPlayerContext } from "./Login"
+import { ourPlayerContext } from "./App"
 import { Player } from "./player"
 
 function Lobby() {
@@ -31,6 +31,7 @@ function Lobby() {
 
     return (
         <>
+            {ourPlayer.username}
             <button onClick={createNewRoom}>Make room</button>
             {players.length}
             <br/>

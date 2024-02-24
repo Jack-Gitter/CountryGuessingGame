@@ -9,17 +9,21 @@ import { Player } from './player';
 
 
 export const socketContext = React.createContext(socket)
+let ourPlayer = new Player("", socket)
+export const ourPlayerContext = React.createContext(ourPlayer)
 
 function App() {
 
 
   return (
+    <ourPlayerContext.Provider value={ourPlayer}>
     <socketContext.Provider value={socket}>
       <Routes>
         <Route path="/" element={<Login/>}/>
         <Route path="/lobby" element={<Lobby/>}/>
       </Routes>
     </socketContext.Provider>
+    </ourPlayerContext.Provider>
   );
 }
 

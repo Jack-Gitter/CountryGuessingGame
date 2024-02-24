@@ -1,18 +1,17 @@
 import { useContext, useEffect, useState } from "react"
 import { LoginRequest, LoginStatus } from "../../shared/types"
 import { useNavigate } from "react-router-dom"
-import { socketContext } from "./App"
+import { ourPlayerContext, socketContext } from "./App"
 import { createContext } from "react"
 import { Player } from "./player"
 
-const socket = useContext(socketContext)
-let ourPlayer = new Player("", socket)
-export const ourPlayerContext = createContext(ourPlayer)
 
 function Login() {
 
+    const socket = useContext(socketContext)
     let [username, setUsername] = useState('')
     let [pass, setPass] = useState('')
+    let ourPlayer = useContext(ourPlayerContext)
     let navigate = useNavigate()
 
     useEffect(() => {
@@ -35,14 +34,11 @@ function Login() {
     }
 
     return (
-        
-        <ourPlayerContext.Provider value={ourPlayer}>
-            <div>
-                <input onChange={(e) => setUsername(e.target.value)}></input>
-                <input onChange={(e) => setPass(e.target.value)}></input>
-                <button onClick={login}>sign in</button>
-            </div>
-        </ourPlayerContext.Provider>
+        <div>
+            <input onChange={(e) => setUsername(e.target.value)}></input>
+            <input onChange={(e) => setPass(e.target.value)}></input>
+            <button onClick={login}>sign in</button>
+        </div>
     )
 
 }
