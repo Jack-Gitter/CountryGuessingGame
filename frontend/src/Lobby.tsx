@@ -19,6 +19,10 @@ function Lobby() {
     const ourPlayer = useContext(ourPlayerContext)
 
     useEffect(() => {
+        ourPlayer.username = localStorage.getItem("username") as string
+    })
+
+    useEffect(() => {
         socket.emit('getLobbyModel')
         socket.on('lobbyModel', (lm: LobbyModel) => {
             setPlayers(lm.players)
