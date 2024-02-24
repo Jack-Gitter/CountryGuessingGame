@@ -3,7 +3,6 @@ import { socketContext } from "./App"
 import { LobbyModel, Player as PlayerModel, RoomModel, tryRoomJoin, tryRoomJoinResponse } from "../../shared/types"
 import { CreateRoomRequest } from "../../shared/types"
 import { ourPlayerContext } from "./App"
-import { Player } from "./player"
 import { useNavigate } from "react-router-dom"
 
 function Lobby() {
@@ -15,11 +14,15 @@ function Lobby() {
     let [rooms, setRooms] = useState<RoomModel[]>([])
     let [pass, setPass] = useState("")
     let [passAttempts, setPassAttempts] = useState<Map<number, string>>(new Map())
+    let [username, setUsername] = useState("")
 
     const ourPlayer = useContext(ourPlayerContext)
 
     useEffect(() => {
-        ourPlayer.username = localStorage.getItem("username") as string
+        if (username !== localStorage.getItem('username')) {
+            ourPlayer.username = localStorage.getItem('username') as string
+            setUsername(localStorage.getItem('username') as string) 
+        }
     })
 
     useEffect(() => {
@@ -55,7 +58,7 @@ function Lobby() {
 
     return (
         <>
-            {ourPlayer.username}
+            {username}
             <button onClick={() => createNewRoom()}>Make public room</button>
             <button onClick={() => 
                 {

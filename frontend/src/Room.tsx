@@ -12,6 +12,7 @@ function Room() {
 
     useEffect(() => {
         if (username !== localStorage.getItem('username')) {
+            ourPlayer.username = localStorage.getItem('username') as string
             setUsername(localStorage.getItem('username') as string) 
         }
         //console.log(localStorage)
@@ -21,7 +22,7 @@ function Room() {
     return (
         <>
         <div>You are in room {id}</div>
-        {localStorage.getItem("username")}
+        {username}
         </>
 
     )
