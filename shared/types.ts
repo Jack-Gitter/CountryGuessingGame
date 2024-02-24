@@ -20,7 +20,7 @@ export type LoginStatus = {
 }
 
 export type Room = {
-   id: Number,
+   id: number,
    players: Player[]
 }
 
