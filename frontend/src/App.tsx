@@ -5,6 +5,7 @@ import Login from './Login';
 import { Route, Routes } from 'react-router-dom'
 import Lobby from './Lobby'
 import { socket } from './socket';
+import { Player } from './player';
 
 
 export const socketContext = React.createContext(socket)

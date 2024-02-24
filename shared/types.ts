@@ -1,3 +1,6 @@
+// make the creatRoomRequest send a just the username of the player 
+// and their socket
+
 export type Player = {
    username: string, 
    password: string,
@@ -6,6 +9,10 @@ export type Player = {
 export type LoginRequest = {
    username: string,
    pass: string
+}
+
+export type CreateRoomRequest = {
+   owner: string
 }
 
 export type LoginStatus = {

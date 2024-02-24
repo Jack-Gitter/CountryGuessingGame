@@ -2,9 +2,14 @@ import { useContext, useEffect, useState } from "react"
 import { LoginRequest, LoginStatus } from "../../shared/types"
 import { useNavigate } from "react-router-dom"
 import { socketContext } from "./App"
-function Login() {
+import { createContext } from "react"
+import { Player } from "./player"
 
-    const socket = useContext(socketContext)
+const socket = useContext(socketContext)
+let ourPlayer = new Player("", socket)
+export const ourPlayerContext = createContext(ourPlayer)
+
+function Login() {
 
     let [username, setUsername] = useState('')
     let [pass, setPass] = useState('')
@@ -13,6 +18,7 @@ function Login() {
     useEffect(() => {
         socket.on('loginStatus', (ls: LoginStatus) => {
             if (ls.success) {
+                ourPlayer.username = username
                 navigate(`/lobby`)
                 // navigate to the lobby screen, and send lobby from backend
             } else {
@@ -29,11 +35,14 @@ function Login() {
     }
 
     return (
-        <div>
-        <input onChange={(e) => setUsername(e.target.value)}></input>
-        <input onChange={(e) => setPass(e.target.value)}></input>
-        <button onClick={login}>sign in</button>
-        </div>
+        
+        <ourPlayerContext.Provider value={ourPlayer}>
+            <div>
+                <input onChange={(e) => setUsername(e.target.value)}></input>
+                <input onChange={(e) => setPass(e.target.value)}></input>
+                <button onClick={login}>sign in</button>
+            </div>
+        </ourPlayerContext.Provider>
     )
 
 }

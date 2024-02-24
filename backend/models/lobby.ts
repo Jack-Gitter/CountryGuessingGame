@@ -1,5 +1,6 @@
-import { LobbyModel, LoginRequest, LoginStatus, Player, Room } from '../../shared/types'
+import { CreateRoomRequest, LobbyModel, LoginRequest, LoginStatus, Player, Room as RoomModel } from '../../shared/types'
 import { Server } from 'socket.io'
+import { Room } from './room'
 
 export class Lobby {
 
@@ -16,17 +17,22 @@ export class Lobby {
     handlePlayerConnection(io: Server) {
         io.on('connection', (socket) => {
             socket.on('login', (lr: LoginRequest) => {
-                this.players.push({username: lr.username, password: lr.pass})
-                this.id+=1
+                this.players.push({username: lr.username, password: lr.pass} as Player)
                 socket.emit('loginStatus', {success: true} as LoginStatus )
-                // also emit the lobby model to everyone, so that they can update 
-                // and know that this
             })
             socket.on('signup', () => {
                 //
             })
             socket.on('getLobbyModel', () => {
                 socket.emit('lobbyModel', {players: this.players, rooms: this.rooms} as LobbyModel)
+            })
+            socket.on('createRoom', (cr: CreateRoomRequest) => {
+                let roomOwner = this.players.find((p: Player) => p.username === cr.owner)
+                if (roomOwner) {
+                    this.rooms.push(new Room(this.id, roomOwner))
+                    this.id+=1
+                    socket.emit('lobbyChanged', {players: this.players, rooms: this.rooms} as LobbyModel)
+                }
             })
         })
     }
