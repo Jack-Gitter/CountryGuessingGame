@@ -37,8 +37,6 @@ export class Lobby {
                 socket.emit('lobbyModel', {players: this.players, rooms: this.rooms.map(r => r.toModel())} as LobbyModel)
             })
             socket.on('createRoom', (cr: CreateRoomRequest) => {
-                console.log("creating room with request")
-                console.log(cr)
                 let roomOwner = this.players.find((p: Player) => p.username === cr.owner)
                 if (roomOwner) {
                     let room = new Room(this.id, roomOwner)
@@ -48,17 +46,14 @@ export class Lobby {
                     this.rooms.push(room)
                     this.id+=1
                     for (const [username, playerSocket] of this.playerSockets) {
-                        console.log("emitting")
                         playerSocket.emit('lobbyChanged', {players: this.players, rooms: this.rooms.map(r => r.toModel())} as LobbyModel)
                     }
                 }
             })
             socket.on('tryRoomJoin', (trj: tryRoomJoin) => {
-                console.log("here1")
                 let room = this.rooms.find((r) => r.id === trj.id)
                 if (room) {
                     if (!room.pass || room.pass && trj.pass === room.pass) {
-                        console.log('here')
                         socket.emit("tryRoomJoinResponse", {success: true, id: room.id})
                     } else {
                         socket.emit('tryRoomJoinResponse', {success: false, id: room.id})

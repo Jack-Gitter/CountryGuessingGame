@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom"
 import { ourPlayerContext, socketContext } from "./App"
 import { createContext } from "react"
 import { Player } from "./player"
+import axios from "axios"
 
 
 function Login() {
@@ -48,6 +49,7 @@ function Login() {
             <input onChange={(e) => setUsername(e.target.value)}></input>
             <input onChange={(e) => setPass(e.target.value)}></input>
             <button onClick={login}>sign in</button>
+            <button onClick={() => axios.get('http://127.0.0.1:8080/socket.io/?EIO=4&transport=polling', {withCredentials: true}).then(() => console.log('hi'))}>TEST TEST TEST </button>
         </div>
     )
 

@@ -9,26 +9,32 @@ const app = express();
 
 app.use(cors({
   credentials: true,
+  origin: "http://127.0.0.1:3000"
 }))
 
 const server = http.createServer(app)
 
 const io = new Server(server, {
   cors: {
-    credentials: true
-  }
+    credentials: true,
+    origin: "http://127.0.0.1:3000"
+  },
+  cookie:true
+
 })
 
-io.on('connection', (socket) => {
-  console.log("socket connected")
+const lobby = new Lobby()
+
+lobby.handlePlayerConnection(io)
+
+
+app.get("/", (req, res) => {
+  console.log("got req")
+  res.send('hi')
 })
 
 server.listen(8080, () => {
     console.log('listening on port 8080')
 })
 
-/*const lobby = new Lobby()
 
-lobby.handlePlayerConnection(io)
-
-io.listen(8080)*/

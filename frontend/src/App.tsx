@@ -9,6 +9,7 @@ import { Player } from './player';
 import Room from './Room';
 import { io } from "socket.io-client";
 import { connect } from 'http2';
+import axios from 'axios';
 
 export const socketContext = React.createContext(socket)
 let ourPlayer = new Player("", socket)
