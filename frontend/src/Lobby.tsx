@@ -22,8 +22,6 @@ function Lobby() {
     let [pass, setPass] = useState("")
     let [passAttempts, setPassAttempts] = useState<Map<number, string>>(new Map())
 
-
-
     useEffect(() => {
         usersocket.emit('getLobbyModel')
         usersocket.on('lobbyModel', (lm: LobbyModel) => {
@@ -94,4 +92,4 @@ function Lobby() {
 }
 
 export default Lobby
-//export {usersocket}
+export {usersocket}
