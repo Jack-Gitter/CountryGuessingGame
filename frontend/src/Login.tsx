@@ -1,22 +1,26 @@
 import { useContext, useEffect, useState } from "react"
-import { LoginRequest, LoginStatus } from "../../shared/types"
 import { useNavigate } from "react-router-dom"
-import { createContext } from "react"
-import { Player } from "./player"
 import axios from "axios"
+import { ourPlayerContext } from "./App"
 
 
 function Login() {
+
+    let ourPlayer = useContext(ourPlayerContext)
 
     let [username, setUsername] = useState('')
     let [pass, setPass] = useState('')
     let navigate = useNavigate()
 
     const login = async () => {
-        let resp = await axios.get('http://127.0.0.1:8080/login')
-        console.log(resp)
-        await axios.get('http://127.0.0.1:8080/socket.io/?EIO=4&transport=polling')
-        navigate('/lobby')
+        let res = await axios.post('http://127.0.0.1:8080/login', {username: username, password: pass}, {withCredentials: true})
+        if (res.status === 200) {
+            ourPlayer.username = res.data.username
+            console.log(ourPlayer)
+            navigate('/lobby')
+        } else {
+            // show toast that you have an invalid login
+        }
     }
 
     return (

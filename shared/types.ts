@@ -4,7 +4,6 @@ import {Socket} from 'socket.io'
 
 export type Player = {
    username: string, 
-   password: string,
 }
 
 export type LoginRequest = {
@@ -13,7 +12,7 @@ export type LoginRequest = {
 }
 
 export type CreateRoomRequest = {
-   owner: string
+   owner: Player
    password?: string
 }
 

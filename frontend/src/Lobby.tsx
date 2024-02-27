@@ -3,30 +3,24 @@ import { LobbyModel, Player as PlayerModel, RoomModel, tryRoomJoin, tryRoomJoinR
 import { CreateRoomRequest } from "../../shared/types"
 import { useNavigate } from "react-router-dom"
 import { Socket, io } from "socket.io-client";
+import { ourPlayerContext } from "./App";
 
 let usersocket: Socket
 
 function Lobby() {
 
+    let ourPlayer = useContext(ourPlayerContext)
+
     useEffect(() => {
-        usersocket = io('http://127.0.0.1:8080', {withCredentials: true})
-        usersocket.emit('cookietest')
+        usersocket = io('http://127.0.0.1:8080', {withCredentials: true}) 
+        ourPlayer.socket = usersocket
     }, [])
-
-    useEffect(() => {
-        /*socket.on('connect', () => {
-            console.log('nice')
-        })
-        socket.emit('cookietest')*/
-    })
-
 
     const navigate = useNavigate()
     let [players, setPlayers] = useState<PlayerModel[]>([])
     let [rooms, setRooms] = useState<RoomModel[]>([])
     let [pass, setPass] = useState("")
     let [passAttempts, setPassAttempts] = useState<Map<number, string>>(new Map())
-    let [username, setUsername] = useState("")
 
 
 
@@ -53,7 +47,7 @@ function Lobby() {
 
     const createNewRoom = (roomPassword?: string) => {
         let crr: CreateRoomRequest = {
-            owner: "bullshit"
+            owner: {username: ourPlayer.username}
         }
         if (roomPassword) {
             crr.password = roomPassword
@@ -67,7 +61,7 @@ function Lobby() {
 
     return (
         <>
-            {username}
+            {ourPlayer.username}
             <button onClick={() => createNewRoom()}>Make public room</button>
             <button onClick={() => 
                 {
@@ -89,7 +83,7 @@ function Lobby() {
                             passAttempts.set(r.id, e.target.value)
                             setPassAttempts(passAttempts)
                         })}></input>: <></>}
-                        {r.owner.username === username ? <button onClick={() => deleteRoom(r.id)}>deleteRoom</button> : <></>}
+                        {r.owner.username === ourPlayer.username ? <button onClick={() => deleteRoom(r.id)}>deleteRoom</button> : <></>}
                     </>
                     )
                 })}
@@ -100,4 +94,4 @@ function Lobby() {
 }
 
 export default Lobby
-export {usersocket}
+//export {usersocket}
