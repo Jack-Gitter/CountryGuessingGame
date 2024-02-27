@@ -56,6 +56,10 @@ function Lobby() {
         socket.emit('createRoom', crr)
     }
 
+    const deleteRoom = (id: number) => {
+        socket.emit("deleteRoom", id)
+    }
+
     return (
         <>
             {username}
@@ -80,6 +84,7 @@ function Lobby() {
                             passAttempts.set(r.id, e.target.value)
                             setPassAttempts(passAttempts)
                         })}></input>: <></>}
+                        {r.owner.username === username ? <button onClick={() => deleteRoom(r.id)}>deleteRoom</button> : <></>}
                     </>
                     )
                 })}

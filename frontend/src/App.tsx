@@ -7,14 +7,14 @@ import Lobby from './Lobby'
 import { socket } from './socket';
 import { Player } from './player';
 import Room from './Room';
-
+import { io } from "socket.io-client";
+import { connect } from 'http2';
 
 export const socketContext = React.createContext(socket)
 let ourPlayer = new Player("", socket)
 export const ourPlayerContext = React.createContext(ourPlayer)
 
 function App() {
-
 
   return (
     <ourPlayerContext.Provider value={ourPlayer}>

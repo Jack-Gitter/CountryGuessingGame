@@ -1,5 +1,6 @@
 // make the creatRoomRequest send a just the username of the player 
 // and their socket
+import {Socket} from 'socket.io'
 
 export type Player = {
    username: string, 
@@ -21,6 +22,7 @@ export type LoginStatus = {
 }
 
 export type RoomModel = {
+   owner: Player,
    id: number,
    players: Player[]
    password?: boolean
