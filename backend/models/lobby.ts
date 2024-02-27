@@ -1,4 +1,4 @@
-import { CreateRoomRequest, LobbyModel, LoginRequest, LoginStatus, Player, RoomModel, tryRoomJoin } from '../../shared/types'
+import { CreateRoomRequest, LobbyModel, LoginRequest, LoginStatus, Player, RoomInfoRequest, RoomModel, tryRoomJoin } from '../../shared/types'
 import { Server } from 'socket.io'
 import { Room } from './room'
 import {Socket} from 'socket.io'
@@ -8,8 +8,7 @@ import { randomUUID } from 'crypto'
 
 
 type PlayerInfo = {
-    username: string
-    password: string
+    player: Player
     socket: Socket | null
 }
 export class Lobby {
@@ -28,7 +27,7 @@ export class Lobby {
 
         app.post('/login', (req, res) => {
             let sid = randomUUID()
-            this.playerInfo.set(sid, {username: req.body.username, password: req.body.password, socket: null})
+            this.playerInfo.set(sid, {player: {username: req.body.username}, socket: null})
             res.cookie('sid', sid)
             res.json({username: req.body.username, password: req.body.password})
         })
@@ -52,7 +51,7 @@ export class Lobby {
                 let players: Player[] = []
 
                 for (const [sid, playerInfo] of this.playerInfo) {
-                    players.push({username: playerInfo.username})
+                    players.push({username: playerInfo.player.username})
                 }
 
                 for (const [username, pif] of this.playerInfo) {
@@ -64,7 +63,7 @@ export class Lobby {
                 let players: Player[] = []
 
                 for (const [sid, playerInfo] of this.playerInfo) {
-                    players.push({username: playerInfo.username})
+                    players.push({username: playerInfo.player.username})
                 }
 
                 socket.emit('lobbyModel', {players: players, rooms: this.rooms.map(r => r.toModel())} as LobbyModel)
@@ -72,21 +71,20 @@ export class Lobby {
 
             socket.on('createRoom', (cr: CreateRoomRequest) => {
 
-                console.log(cr)
                 let players: Player[] = []
 
                 for (const [sid, playerInfo] of this.playerInfo) {
-                    players.push({username: playerInfo.username})
+                    players.push({username: playerInfo.player.username})
                 }
 
                 let roomOwner = players.find((p: Player) => p.username === cr.owner.username)
-                console.log(`room owner is ${roomOwner}`)
                 if (roomOwner) {
                     let room = new Room(this.id, roomOwner)
                     if (cr.password) {
                         room.pass = cr.password
                     }
                     this.rooms.push(room)
+                    console.log(room)
                     this.id+=1
                     for (const [username, pif] of this.playerInfo) {
                         pif.socket?.emit('lobbyChanged', {players: players, rooms: this.rooms.map(r => r.toModel())} as LobbyModel)
@@ -98,11 +96,23 @@ export class Lobby {
                 let room = this.rooms.find((r) => r.id === trj.id)
                 if (room) {
                     if (!room.pass || room.pass && trj.pass === room.pass) {
+                        let sid = cookie.parse(socket.request.headers.cookie as string)['sid']
+                        let pif = this.playerInfo.get(sid)
+                        room.players.push(pif?.player as Player)
+                        console.log(room)
+                        socket.join(trj.id.toString())
                         socket.emit("tryRoomJoinResponse", {success: true, id: room.id})
                     } else {
                         socket.emit('tryRoomJoinResponse', {success: false, id: room.id})
                     }
                 }
+            })
+
+            socket.on('getRoomInfo', (rir: RoomInfoRequest) => {
+                let room = this.rooms.find((r: Room) => r.id === rir.rid)
+                socket.emit('RoomModel', {
+                   room 
+                })
             })
 
         })

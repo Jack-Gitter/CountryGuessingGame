@@ -29,8 +29,6 @@ function Lobby() {
             setRooms(lm.rooms)
         })
         usersocket.on('lobbyChanged', (l: LobbyModel) => {
-            console.log("new lobby is")
-            console.log(l)
             setRooms(l.rooms)
             setPlayers(l.players)
         })

@@ -42,3 +42,7 @@ export type tryRoomJoinResponse = {
    success: boolean, 
    id:number
 }
+
+export type RoomInfoRequest = {
+   rid: number
+}

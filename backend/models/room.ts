@@ -5,10 +5,11 @@ export class Room {
     owner: Player
     players: Player[]
     pass?: string
+
     constructor(id: number, owner: Player, pass?: string) {
         this.id = id
         this.owner = owner
-        this.players = [owner]
+        this.players = []
         if (pass) {
             this.pass = pass
         }
