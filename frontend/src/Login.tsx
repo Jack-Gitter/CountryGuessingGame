@@ -12,15 +12,17 @@ function Login() {
     let [pass, setPass] = useState('')
     let navigate = useNavigate()
 
-    const login = () => {
-        axios.get('http://127.0.0.1:8080/login').then(() => navigate('/lobby'))
+    const login = async () => {
+        let resp = await axios.get('http://127.0.0.1:8080/login')
+        console.log(resp)
+        await axios.get('http://127.0.0.1:8080/socket.io/?EIO=4&transport=polling')
+        navigate('/lobby')
     }
 
     return (
         <div>
             <input onChange={(e) => setUsername(e.target.value)}></input>
             <input onChange={(e) => setPass(e.target.value)}></input>
-            <button onClick={() => axios.get('http://127.0.0.1:8080/socket.io/?EIO=4&transport=polling', {withCredentials: true}).then(() => console.log('hi'))}>TESTTTTT</button>
             <button onClick={login}>sign in</button>
         </div>
     )

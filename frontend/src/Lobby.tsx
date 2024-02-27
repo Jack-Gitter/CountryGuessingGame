@@ -2,16 +2,24 @@ import { useContext, useEffect, useState } from "react"
 import { LobbyModel, Player as PlayerModel, RoomModel, tryRoomJoin, tryRoomJoinResponse } from "../../shared/types"
 import { CreateRoomRequest } from "../../shared/types"
 import { useNavigate } from "react-router-dom"
-import { socket } from "./socket"
+import { Socket, io } from "socket.io-client";
+
+let usersocket: Socket
 
 function Lobby() {
-    // on this page, we need to request the lobby model, so we can update the frontend
+
     useEffect(() => {
-        socket.on('connect', () => {
+        usersocket = io('http://127.0.0.1:8080', {withCredentials: true})
+        usersocket.emit('cookietest')
+    }, [])
+
+    useEffect(() => {
+        /*socket.on('connect', () => {
             console.log('nice')
         })
-        socket.emit('cookietest')
+        socket.emit('cookietest')*/
     })
+
 
     const navigate = useNavigate()
     let [players, setPlayers] = useState<PlayerModel[]>([])
@@ -23,18 +31,18 @@ function Lobby() {
 
 
     useEffect(() => {
-        socket.emit('getLobbyModel')
-        socket.on('lobbyModel', (lm: LobbyModel) => {
+        usersocket.emit('getLobbyModel')
+        usersocket.on('lobbyModel', (lm: LobbyModel) => {
             setPlayers(lm.players)
             setRooms(lm.rooms)
         })
-        socket.on('lobbyChanged', (l: LobbyModel) => {
+        usersocket.on('lobbyChanged', (l: LobbyModel) => {
             console.log("new lobby is")
             console.log(l)
             setRooms(l.rooms)
             setPlayers(l.players)
         })
-        socket.on('tryRoomJoinResponse', (obj: tryRoomJoinResponse) => {
+        usersocket.on('tryRoomJoinResponse', (obj: tryRoomJoinResponse) => {
             if (obj.success) {
                 navigate(`/room/${obj.id}`)
             } else {
@@ -50,11 +58,11 @@ function Lobby() {
         if (roomPassword) {
             crr.password = roomPassword
         }
-        socket.emit('createRoom', crr)
+        usersocket.emit('createRoom', crr)
     }
 
     const deleteRoom = (id: number) => {
-        socket.emit("deleteRoom", id)
+        usersocket.emit("deleteRoom", id)
     }
 
     return (
@@ -76,7 +84,7 @@ function Lobby() {
                     return (
                     <>
                         <li>{r.id}</li>
-                        <button onClick={() => {socket.emit('tryRoomJoin', {id: r.id, pass: passAttempts.get(r.id)} as tryRoomJoin)}}>Join Room</button>
+                        <button onClick={() => {usersocket.emit('tryRoomJoin', {id: r.id, pass: passAttempts.get(r.id)} as tryRoomJoin)}}>Join Room</button>
                         {r.password ? <input onChange={((e) => {
                             passAttempts.set(r.id, e.target.value)
                             setPassAttempts(passAttempts)
@@ -92,3 +100,4 @@ function Lobby() {
 }
 
 export default Lobby
+export {usersocket}

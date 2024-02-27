@@ -31,7 +31,7 @@ lobby.handlePlayerConnection(io)
 
 
 app.get('/login', (req, res) => {
-  res.send()
+  res.send('success')
 })
 
 server.listen(8080, () => {
