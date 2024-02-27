@@ -19,7 +19,9 @@ const io = new Server(server, {
     credentials: true,
     origin: "http://127.0.0.1:3000"
   },
-  cookie:true
+  cookie: {
+    name: "sid"
+  }
 
 })
 
@@ -28,9 +30,8 @@ const lobby = new Lobby()
 lobby.handlePlayerConnection(io)
 
 
-app.get("/", (req, res) => {
-  console.log("got req")
-  res.send('hi')
+app.get('/login', (req, res) => {
+  res.send()
 })
 
 server.listen(8080, () => {

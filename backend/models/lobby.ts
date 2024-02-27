@@ -2,6 +2,7 @@ import { CreateRoomRequest, LobbyModel, LoginRequest, LoginStatus, Player, RoomM
 import { Server } from 'socket.io'
 import { Room } from './room'
 import {Socket} from 'socket.io'
+import cookie from 'cookie'
 
 export class Lobby {
 
@@ -19,6 +20,9 @@ export class Lobby {
 
     handlePlayerConnection(io: Server) {
         io.on('connection', (socket) => {
+            socket.on('cookietest', () => {
+                console.log(cookie.parse(socket.handshake.headers.cookie as string))
+            })
             socket.on('login', (lr: LoginRequest) => {
                 this.players.push({username: lr.username, password: lr.pass} as Player)
                 this.playerSockets.set(lr.username, socket)

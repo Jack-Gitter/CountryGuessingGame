@@ -1,29 +1,26 @@
 import { useContext, useEffect, useState } from "react"
-import { socketContext } from "./App"
 import { LobbyModel, Player as PlayerModel, RoomModel, tryRoomJoin, tryRoomJoinResponse } from "../../shared/types"
 import { CreateRoomRequest } from "../../shared/types"
-import { ourPlayerContext } from "./App"
 import { useNavigate } from "react-router-dom"
+import { socket } from "./socket"
 
 function Lobby() {
     // on this page, we need to request the lobby model, so we can update the frontend
+    useEffect(() => {
+        socket.on('connect', () => {
+            console.log('nice')
+        })
+        socket.emit('cookietest')
+    })
 
     const navigate = useNavigate()
-    let socket = useContext(socketContext)
     let [players, setPlayers] = useState<PlayerModel[]>([])
     let [rooms, setRooms] = useState<RoomModel[]>([])
     let [pass, setPass] = useState("")
     let [passAttempts, setPassAttempts] = useState<Map<number, string>>(new Map())
     let [username, setUsername] = useState("")
 
-    const ourPlayer = useContext(ourPlayerContext)
 
-    useEffect(() => {
-        if (username !== localStorage.getItem('username')) {
-            ourPlayer.username = localStorage.getItem('username') as string
-            setUsername(localStorage.getItem('username') as string) 
-        }
-    })
 
     useEffect(() => {
         socket.emit('getLobbyModel')
@@ -48,7 +45,7 @@ function Lobby() {
 
     const createNewRoom = (roomPassword?: string) => {
         let crr: CreateRoomRequest = {
-            owner: ourPlayer.username
+            owner: "bullshit"
         }
         if (roomPassword) {
             crr.password = roomPassword
