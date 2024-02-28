@@ -25,12 +25,14 @@ function Lobby() {
     useEffect(() => {
         usersocket.emit('getLobbyModel')
         usersocket.on('lobbyModel', (lm: LobbyModel) => {
-            setPlayers(lm.players)
-            setRooms(lm.rooms)
+            setPlayers([...lm.players])
+            setRooms([...lm.rooms])
         })
         usersocket.on('lobbyChanged', (l: LobbyModel) => {
-            setRooms(l.rooms)
-            setPlayers(l.players)
+            console.log('lobby changed')
+            console.log(l)
+            setRooms([...l.rooms])
+            setPlayers([...l.players])
         })
         usersocket.on('tryRoomJoinResponse', (obj: tryRoomJoinResponse) => {
             if (obj.success) {
@@ -39,7 +41,7 @@ function Lobby() {
                 console.log('wrong password')
             }
         })
-    }, [])
+    })
 
     const createNewRoom = (roomPassword?: string) => {
         let crr: CreateRoomRequest = {

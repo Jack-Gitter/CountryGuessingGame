@@ -1,4 +1,4 @@
-import { CreateRoomRequest, LobbyModel, LoginRequest, LoginStatus, Player, RoomInfoRequest, RoomModel, tryRoomJoin } from '../../shared/types'
+import { CreateRoomRequest, LeaveRoom, LobbyModel, LoginRequest, LoginStatus, Player, RoomInfoRequest, RoomModel, tryRoomJoin } from '../../shared/types'
 import { Server } from 'socket.io'
 import { Room } from './room'
 import {Socket} from 'socket.io'
@@ -99,8 +99,8 @@ export class Lobby {
                         let sid = cookie.parse(socket.request.headers.cookie as string)['sid']
                         let pif = this.playerInfo.get(sid)
                         room.players.push(pif?.player as Player)
-                        console.log(room)
                         socket.join(trj.id.toString())
+                        io.to(trj.id.toString()).emit('RoomModel', room.toModel())
                         socket.emit("tryRoomJoinResponse", {success: true, id: room.id})
                     } else {
                         socket.emit('tryRoomJoinResponse', {success: false, id: room.id})
@@ -110,9 +110,28 @@ export class Lobby {
 
             socket.on('getRoomInfo', (rir: RoomInfoRequest) => {
                 let room = this.rooms.find((r: Room) => r.id === rir.rid)
-                socket.emit('RoomModel', {
-                   room 
-                })
+                socket.emit('RoomModel', 
+                   room?.toModel()
+                )
+            })
+
+
+            socket.on('leaveRoom', (l : LeaveRoom) => {
+                let room = this.rooms.find((r: Room) => l.rid === r.id)
+                if (room) {
+                    let playername = ""
+                    for (const [sid, playerinfo] of this.playerInfo) {
+                        if (playerinfo.socket?.id === socket.id) {
+                            playername = playerinfo.player.username
+                            break
+                        }
+                    }
+                    console.log(`player ${playername} is leaving room`)
+                    room.players = room?.players.filter((p: Player) => p.username !== playername)
+                    console.log(`players in room are now`)
+                    console.log(room.players)
+                    io.to(l.rid.toString()).emit('RoomModel', room?.toModel())
+                }
             })
 
         })

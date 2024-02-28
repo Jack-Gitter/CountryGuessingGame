@@ -27,6 +27,10 @@ export type RoomModel = {
    password?: boolean
 }
 
+export type LeaveRoom = {
+   rid: number
+}
+
 export type LobbyModel = {
    players: Player[]
    rooms: RoomModel[]
